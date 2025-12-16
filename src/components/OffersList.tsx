@@ -8,7 +8,8 @@ type OffersListProps = {
 };
 
 export function OffersList({ offers, className = 'cities__places-list places__list tabs__content' }: OffersListProps) {
-  const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   const handleMouseEnter = (offerId: string) => {
     setActiveOfferId(offerId);
