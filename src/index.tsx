@@ -1,10 +1,11 @@
 import ReactDOM from 'react-dom/client';
 import { App } from './App/App';
+import { mockOffers } from './mocks/offers';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 root.render(
-  <App />
+  <App offers={mockOffers} />
 );
