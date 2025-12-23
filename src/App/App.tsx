@@ -7,20 +7,25 @@ import { Favourites } from '../pages/FavoritesPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import Layout from '../components/Layout';
 import { PrivateRoute } from '../components/PrivateRoute';
+import { Offer } from '../mocks/offers';
 
-export function App() {
+type AppProps = {
+  offers: Offer[];
+};
+
+export function App({ offers }: AppProps) {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route index element={<MainPage offerCardsCount={5} />} />
+          <Route index element={<MainPage offers={offers} />} />
           <Route path={AppRoutes.Login} element={<LoginPage />} />
-          <Route path={AppRoutes.Offer} element={<OfferPage />} />
+          <Route path={AppRoutes.Offer} element={<OfferPage offers={offers} />} />
           <Route
             path={AppRoutes.Favorites}
             element={
               <PrivateRoute>
-                <Favourites />
+                <Favourites offers={offers} />
               </PrivateRoute>
             }
           />
