@@ -123,8 +123,8 @@ export const mockOffers: Offer[] = [
       }
     },
     location: {
-      latitude: 52.3809553943508,
-      longitude: 4.939309666406198,
+      latitude: 52.3909553943508,
+      longitude: 4.929309666406198,
       zoom: 12
     },
     isFavorite: false,
@@ -159,8 +159,8 @@ export const mockOffers: Offer[] = [
       }
     },
     location: {
-      latitude: 52.3709553943508,
-      longitude: 4.889309666406198,
+      latitude: 52.3809553943508,
+      longitude: 4.939309666406198,
       zoom: 12
     },
     isFavorite: true,

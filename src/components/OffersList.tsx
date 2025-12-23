@@ -1,22 +1,23 @@
-import { useState } from 'react';
 import { OfferCard } from './OfferCard';
 import { Offer } from '../mocks/offers';
 
 type OffersListProps = {
   offers: Offer[];
   className?: string;
+  onOfferHover?: (offerId: string | null) => void;
 };
 
-export function OffersList({ offers, className = 'cities__places-list places__list tabs__content' }: OffersListProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_activeOfferId, setActiveOfferId] = useState<string | null>(null);
-
+export function OffersList({ offers, className = 'cities__places-list places__list tabs__content', onOfferHover }: OffersListProps) {
   const handleMouseEnter = (offerId: string) => {
-    setActiveOfferId(offerId);
+    if (onOfferHover) {
+      onOfferHover(offerId);
+    }
   };
 
   const handleMouseLeave = () => {
-    setActiveOfferId(null);
+    if (onOfferHover) {
+      onOfferHover(null);
+    }
   };
 
   return (
