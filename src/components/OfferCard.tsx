@@ -7,9 +7,11 @@ type OfferCardProps = {
   offer: Offer;
   onMouseEnter?: (offerId: string) => void;
   onMouseLeave?: () => void;
+  cardClassName?: string;
+  imageWrapperClassName?: string;
 }
 
-export function OfferCard({ offer, onMouseEnter, onMouseLeave }: OfferCardProps): JSX.Element {
+export function OfferCard({ offer, onMouseEnter, onMouseLeave, cardClassName = 'cities__card place-card', imageWrapperClassName = 'cities__image-wrapper place-card__image-wrapper' }: OfferCardProps): JSX.Element {
   const handleMouseEnter = () => {
     if (onMouseEnter) {
       onMouseEnter(offer.id);
@@ -18,7 +20,7 @@ export function OfferCard({ offer, onMouseEnter, onMouseLeave }: OfferCardProps)
 
   return (
     <article
-      className="cities__card place-card"
+      className={cardClassName}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -27,7 +29,7 @@ export function OfferCard({ offer, onMouseEnter, onMouseLeave }: OfferCardProps)
           <span>Premium</span>
         </div>
       )}
-      <div className="cities__image-wrapper place-card__image-wrapper">
+      <div className={imageWrapperClassName}>
         <Link to={`${AppRoutes.Offer.replace(':id', offer.id)}`}>
           <img
             className="place-card__image"
