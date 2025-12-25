@@ -1,7 +1,10 @@
-import { useParams, Navigate, Link } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { Offer } from '../mocks/offers';
-import { BookmarkButton } from '../components/BookmarkButton';
 import { ReviewForm } from '../components/ReviewForm';
+import { ReviewsList } from '../components/ReviewsList';
+import { Map } from '../components/Map';
+import { OffersList } from '../components/OffersList';
+import { mockReviews } from '../mocks/reviews';
 import { AppRoutes } from '../App/AppRoutes';
 
 type OfferPageProps = {
@@ -20,6 +23,9 @@ export function OfferPage({ offers }: OfferPageProps) {
   const nearPlaces = offers.filter(
     (o) => o.city.name === offer.city.name && o.id !== offer.id
   ).slice(0, 3);
+
+  // Получаем отзывы для текущего предложения
+  const offerReviews = mockReviews.filter((review) => review.offerId === offer.id);
 
   return (
     <main className="page__main page__main--offer">
@@ -106,46 +112,14 @@ export function OfferPage({ offers }: OfferPageProps) {
               </div>
             </div>
             <section className="offer__reviews reviews">
-              <h2 className="reviews__title">
-                Reviews · <span className="reviews__amount">1</span>
-              </h2>
-              <ul className="reviews__list">
-                <li className="reviews__item">
-                  <div className="reviews__user user">
-                    <div className="reviews__avatar-wrapper user__avatar-wrapper">
-                      <img
-                        className="reviews__avatar user__avatar"
-                        src="img/avatar-max.jpg"
-                        width={54}
-                        height={54}
-                        alt="Reviews avatar"
-                      />
-                    </div>
-                    <span className="reviews__user-name">Max</span>
-                  </div>
-                  <div className="reviews__info">
-                    <div className="reviews__rating rating">
-                      <div className="reviews__stars rating__stars">
-                        <span style={{ width: '80%' }} />
-                        <span className="visually-hidden">Rating</span>
-                      </div>
-                    </div>
-                    <p className="reviews__text">
-                      A quiet cozy and picturesque that hides behind a a river by
-                      the unique lightness of Amsterdam. The building is green and
-                      from 18th century.
-                    </p>
-                    <time className="reviews__time" dateTime="2019-04-24">
-                      April 2019
-                    </time>
-                  </div>
-                </li>
-              </ul>
+              <ReviewsList reviews={offerReviews} />
               <ReviewForm />
             </section>
           </div>
         </div>
-        <section className="offer__map map" />
+        <section className="offer__map map">
+          <Map offers={nearPlaces} city={offer.city} />
+        </section>
       </section>
       {nearPlaces.length > 0 && (
         <div className="container">
@@ -153,49 +127,11 @@ export function OfferPage({ offers }: OfferPageProps) {
             <h2 className="near-places__title">
               Other places in the neighbourhood
             </h2>
-            <div className="near-places__list places__list">
-              {nearPlaces.map((nearOffer) => (
-                <article key={nearOffer.id} className="near-places__card place-card">
-                  {nearOffer.isPremium && (
-                    <div className="place-card__mark">
-                      <span>Premium</span>
-                    </div>
-                  )}
-                  <div className="near-places__image-wrapper place-card__image-wrapper">
-                    <Link to={`${AppRoutes.Offer.replace(':id', nearOffer.id)}`}>
-                      <img
-                        className="place-card__image"
-                        src={nearOffer.previewImage}
-                        width={260}
-                        height={200}
-                        alt="Place image"
-                      />
-                    </Link>
-                  </div>
-                  <div className="place-card__info">
-                    <div className="place-card__price-wrapper">
-                      <div className="place-card__price">
-                        <b className="place-card__price-value">€{nearOffer.price}</b>
-                        <span className="place-card__price-text">/&nbsp;night</span>
-                      </div>
-                      <BookmarkButton isFavourite={nearOffer.isFavorite} />
-                    </div>
-                    <div className="place-card__rating rating">
-                      <div className="place-card__stars rating__stars">
-                        <span style={{ width: `${nearOffer.rating * 100 / 5}%` }} />
-                        <span className="visually-hidden">Rating</span>
-                      </div>
-                    </div>
-                    <h2 className="place-card__name">
-                      <Link to={`${AppRoutes.Offer.replace(':id', nearOffer.id)}`}>
-                        {nearOffer.title}
-                      </Link>
-                    </h2>
-                    <p className="place-card__type">{nearOffer.type}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <OffersList
+              offers={nearPlaces}
+              className="near-places__list places__list"
+              cardVariant="near-places"
+            />
           </section>
         </div>
       )}
