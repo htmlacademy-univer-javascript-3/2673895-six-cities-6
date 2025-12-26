@@ -1,4 +1,5 @@
 import { Offer } from '../types/offer';
+import { AuthorizationStatus, AuthInfo } from '../types/auth';
 
 export type City = {
   name: string;
@@ -16,6 +17,8 @@ export type State = {
   offers: Offer[];
   sortType: SortType;
   isLoading: boolean;
+  authorizationStatus: AuthorizationStatus;
+  user: AuthInfo | null;
 };
 
 const initialState: State = {
@@ -29,7 +32,9 @@ const initialState: State = {
   },
   offers: [],
   sortType: 'Popular',
-  isLoading: false
+  isLoading: false,
+  authorizationStatus: 'UNKNOWN',
+  user: null
 };
 
 export function reducer(state = initialState, action: { type: string; payload?: unknown }): State {
@@ -54,6 +59,23 @@ export function reducer(state = initialState, action: { type: string; payload?: 
       return {
         ...state,
         sortType: action.payload as SortType
+      };
+    case 'user/requireAuthorization':
+      return {
+        ...state,
+        authorizationStatus: action.payload as AuthorizationStatus
+      };
+    case 'user/setUser':
+      return {
+        ...state,
+        user: action.payload as AuthInfo,
+        authorizationStatus: 'AUTH'
+      };
+    case 'user/logout':
+      return {
+        ...state,
+        user: null,
+        authorizationStatus: 'NO_AUTH'
       };
     default:
       return state;

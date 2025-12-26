@@ -1,14 +1,30 @@
 import cn from 'classnames';
 import { Outlet, useLocation, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppRoutes } from '../App/AppRoutes';
+import { getAuthorizationStatus, getUser, getAllOffers } from '../store/selectors';
+import { logout } from '../store/actions';
 
 export default function Layout() {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const user = useSelector(getUser);
+  const offers = useSelector(getAllOffers);
   const isLoginPage = location.pathname === AppRoutes.Login;
+  const isAuthorized = authorizationStatus === 'AUTH';
+  
+  const favoriteCount = offers.filter((offer) => offer.isFavorite).length;
+
   const pageClasses = cn('page', {
     'page--gray page--main': location.pathname === AppRoutes.Main,
     'page--gray page--login': isLoginPage
   });
+
+  const handleSignOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    dispatch(logout());
+  };
 
   return (
     <div className={pageClasses}>
@@ -34,23 +50,41 @@ export default function Layout() {
             {!isLoginPage && (
               <nav className="header__nav">
                 <ul className="header__nav-list">
-                  <li className="header__nav-item user">
-                    <Link
-                      className="header__nav-link header__nav-link--profile"
-                      to={AppRoutes.Favorites}
-                    >
-                      <div className="header__avatar-wrapper user__avatar-wrapper"></div>
-                      <span className="header__user-name user__name">
-                        Oliver.conner@gmail.com
-                      </span>
-                      <span className="header__favorite-count">3</span>
-                    </Link>
-                  </li>
-                  <li className="header__nav-item">
-                    <Link className="header__nav-link" to={AppRoutes.Login}>
-                      <span className="header__signout">Sign out</span>
-                    </Link>
-                  </li>
+                  {isAuthorized && user ? (
+                    <>
+                      <li className="header__nav-item user">
+                        <Link
+                          className="header__nav-link header__nav-link--profile"
+                          to={AppRoutes.Favorites}
+                        >
+                          <div className="header__avatar-wrapper user__avatar-wrapper">
+                            <img
+                              src={user.avatarUrl}
+                              alt={user.name}
+                              style={{ borderRadius: '50%' }}
+                            />
+                          </div>
+                          <span className="header__user-name user__name">
+                            {user.email}
+                          </span>
+                          {favoriteCount > 0 && (
+                            <span className="header__favorite-count">{favoriteCount}</span>
+                          )}
+                        </Link>
+                      </li>
+                      <li className="header__nav-item">
+                        <a className="header__nav-link" href="#" onClick={handleSignOut}>
+                          <span className="header__signout">Sign out</span>
+                        </a>
+                      </li>
+                    </>
+                  ) : (
+                    <li className="header__nav-item">
+                      <Link className="header__nav-link" to={AppRoutes.Login}>
+                        <span className="header__login">Sign in</span>
+                      </Link>
+                    </li>
+                  )}
                 </ul>
               </nav>
             )}
