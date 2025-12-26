@@ -1,13 +1,12 @@
-import { Offer } from '../mocks/offers';
+import { useSelector } from 'react-redux';
 import { FavoriteCard } from '../components/FavoriteCard';
 import { Link } from 'react-router-dom';
+import { Offer } from '../mocks/offers';
+import { getAllOffers } from '../store/selectors';
 import { AppRoutes } from '../App/AppRoutes';
 
-type FavouritesProps = {
-  offers: Offer[];
-};
-
-export function Favourites({ offers }: FavouritesProps) {
+export function Favourites() {
+  const offers = useSelector(getAllOffers);
   const favoriteOffers = offers.filter((offer) => offer.isFavorite);
   
   // Группируем по городам
@@ -21,7 +20,7 @@ export function Favourites({ offers }: FavouritesProps) {
   }, {} as Record<string, Offer[]>);
 
   if (favoriteOffers.length === 0) {
-    return (
+  return (
       <>
         <main className="page__main page__main--favorites">
           <div className="page__favorites-container container">
@@ -32,7 +31,7 @@ export function Favourites({ offers }: FavouritesProps) {
                 <p className="favorites__status-description">
                   Save properties to narrow down search or plan your future trips.
                 </p>
-              </div>
+            </div>
             </section>
           </div>
         </main>
@@ -54,19 +53,19 @@ export function Favourites({ offers }: FavouritesProps) {
             <ul className="favorites__list">
               {Object.entries(offersByCity).map(([cityName, cityOffers]) => (
                 <li key={cityName} className="favorites__locations-items">
-                  <div className="favorites__locations locations locations--current">
-                    <div className="locations__item">
-                      <a className="locations__item-link" href="#">
+                <div className="favorites__locations locations locations--current">
+                  <div className="locations__item">
+                    <a className="locations__item-link" href="#">
                         <span>{cityName}</span>
-                      </a>
-                    </div>
+                    </a>
                   </div>
-                  <div className="favorites__places">
+                </div>
+                <div className="favorites__places">
                     {cityOffers.map((offer) => (
                       <FavoriteCard key={offer.id} offer={offer} />
                     ))}
-                  </div>
-                </li>
+                </div>
+              </li>
               ))}
             </ul>
           </section>
