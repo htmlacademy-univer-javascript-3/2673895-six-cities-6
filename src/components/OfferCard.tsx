@@ -25,8 +25,8 @@ export function OfferCard({ offer, onMouseEnter, onMouseLeave, cardClassName = '
       onMouseLeave={onMouseLeave}
     >
       {offer.isPremium && (
-        <div className="place-card__mark">
-          <span>Premium</span>
+      <div className="place-card__mark">
+        <span>Premium</span>
         </div>
       )}
       <div className={imageWrapperClassName}>
