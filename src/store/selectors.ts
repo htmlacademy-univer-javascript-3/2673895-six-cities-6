@@ -6,6 +6,8 @@ export const getCity = (state: RootState) => state.data.city;
 export const getAllOffers = (state: RootState) => state.data.offers;
 export const getSortType = (state: RootState) => state.data.sortType;
 export const getIsLoading = (state: RootState) => state.data.isLoading;
+export const getAuthorizationStatus = (state: RootState) => state.data.authorizationStatus;
+export const getUser = (state: RootState) => state.data.user;
 
 const sortOffers = (offers: Offer[], sortType: SortType): Offer[] => {
   const sortedOffers = [...offers];
