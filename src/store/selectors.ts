@@ -1,10 +1,11 @@
 import { RootState } from './index';
 import { SortType } from './reducer';
-import { Offer } from '../mocks/offers';
+import { Offer } from '../types/offer';
 
 export const getCity = (state: RootState) => state.data.city;
 export const getAllOffers = (state: RootState) => state.data.offers;
 export const getSortType = (state: RootState) => state.data.sortType;
+export const getIsLoading = (state: RootState) => state.data.isLoading;
 
 const sortOffers = (offers: Offer[], sortType: SortType): Offer[] => {
   const sortedOffers = [...offers];

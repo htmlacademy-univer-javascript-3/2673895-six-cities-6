@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { BookmarkButton } from './BookmarkButton.tsx';
-import { Offer } from '../mocks/offers';
+import { Offer } from '../types/offer';
 import { AppRoutes } from '../App/AppRoutes';
 
 type OfferCardProps = {
