@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { BookmarkButton } from './BookmarkButton';
-import { Offer } from '../mocks/offers';
+import { Offer } from '../types/offer';
 import { AppRoutes } from '../App/AppRoutes';
 
 type FavoriteCardProps = {

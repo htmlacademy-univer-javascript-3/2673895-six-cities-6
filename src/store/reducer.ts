@@ -1,4 +1,4 @@
-import { Offer } from '../mocks/offers';
+import { Offer } from '../types/offer';
 
 export type City = {
   name: string;
@@ -15,6 +15,7 @@ export type State = {
   city: City;
   offers: Offer[];
   sortType: SortType;
+  isLoading: boolean;
 };
 
 const initialState: State = {
@@ -27,7 +28,8 @@ const initialState: State = {
     }
   },
   offers: [],
-  sortType: 'Popular'
+  sortType: 'Popular',
+  isLoading: false
 };
 
 export function reducer(state = initialState, action: { type: string; payload?: unknown }): State {
@@ -40,7 +42,13 @@ export function reducer(state = initialState, action: { type: string; payload?: 
     case 'offers/loadOffers':
       return {
         ...state,
-        offers: action.payload as Offer[]
+        offers: action.payload as Offer[],
+        isLoading: false
+      };
+    case 'offers/setLoading':
+      return {
+        ...state,
+        isLoading: action.payload as boolean
       };
     case 'sort/changeSortType':
       return {

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { FavoriteCard } from '../components/FavoriteCard';
 import { Link } from 'react-router-dom';
-import { Offer } from '../mocks/offers';
+import { Offer } from '../types/offer';
 import { getAllOffers } from '../store/selectors';
 import { AppRoutes } from '../App/AppRoutes';
 

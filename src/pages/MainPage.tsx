@@ -4,12 +4,30 @@ import { OffersList } from '../components/OffersList';
 import { Map } from '../components/Map';
 import { CitiesList } from '../components/CitiesList';
 import { SortOptions } from '../components/SortOptions';
-import { getCity, getOffersByCity } from '../store/selectors';
+import { Spinner } from '../components/Spinner';
+import { getCity, getOffersByCity, getIsLoading } from '../store/selectors';
 
 export function MainPage(): JSX.Element {
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
   const city = useSelector(getCity);
   const offers = useSelector(getOffersByCity);
+  const isLoading = useSelector(getIsLoading);
+
+  if (isLoading) {
+    return (
+      <main className="page__main page__main--index">
+        <h1 className="visually-hidden">Cities</h1>
+        <div className="tabs">
+          <CitiesList />
+        </div>
+        <div className="cities">
+          <div className="cities__places-container container">
+            <Spinner />
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="page__main page__main--index">
