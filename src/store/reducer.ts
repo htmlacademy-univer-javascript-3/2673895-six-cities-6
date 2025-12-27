@@ -1,5 +1,6 @@
 import { Offer } from '../types/offer';
 import { AuthorizationStatus, AuthInfo } from '../types/auth';
+import { Review } from '../types/review';
 
 export type City = {
   name: string;
@@ -19,6 +20,11 @@ export type State = {
   isLoading: boolean;
   authorizationStatus: AuthorizationStatus;
   user: AuthInfo | null;
+  currentOffer: Offer | null;
+  nearPlaces: Offer[];
+  reviews: Review[];
+  isOfferLoading: boolean;
+  isReviewsLoading: boolean;
 };
 
 const initialState: State = {
@@ -34,7 +40,12 @@ const initialState: State = {
   sortType: 'Popular',
   isLoading: false,
   authorizationStatus: 'UNKNOWN',
-  user: null
+  user: null,
+  currentOffer: null,
+  nearPlaces: [],
+  reviews: [],
+  isOfferLoading: false,
+  isReviewsLoading: false
 };
 
 export function reducer(state = initialState, action: { type: string; payload?: unknown }): State {
@@ -76,6 +87,38 @@ export function reducer(state = initialState, action: { type: string; payload?: 
         ...state,
         user: null,
         authorizationStatus: 'NO_AUTH'
+      };
+    case 'offer/loadOffer':
+      return {
+        ...state,
+        currentOffer: action.payload as Offer | null,
+        isOfferLoading: false
+      };
+    case 'offer/setLoading':
+      return {
+        ...state,
+        isOfferLoading: action.payload as boolean
+      };
+    case 'offer/loadNearPlaces':
+      return {
+        ...state,
+        nearPlaces: action.payload as Offer[]
+      };
+    case 'reviews/loadReviews':
+      return {
+        ...state,
+        reviews: action.payload as Review[],
+        isReviewsLoading: false
+      };
+    case 'reviews/setLoading':
+      return {
+        ...state,
+        isReviewsLoading: action.payload as boolean
+      };
+    case 'reviews/addReview':
+      return {
+        ...state,
+        reviews: [action.payload as Review, ...state.reviews]
       };
     default:
       return state;

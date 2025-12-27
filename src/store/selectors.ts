@@ -8,6 +8,11 @@ export const getSortType = (state: RootState) => state.data.sortType;
 export const getIsLoading = (state: RootState) => state.data.isLoading;
 export const getAuthorizationStatus = (state: RootState) => state.data.authorizationStatus;
 export const getUser = (state: RootState) => state.data.user;
+export const getCurrentOffer = (state: RootState) => state.data.currentOffer;
+export const getNearPlaces = (state: RootState) => state.data.nearPlaces;
+export const getReviews = (state: RootState) => state.data.reviews;
+export const getIsOfferLoading = (state: RootState) => state.data.isOfferLoading;
+export const getIsReviewsLoading = (state: RootState) => state.data.isReviewsLoading;
 
 const sortOffers = (offers: Offer[], sortType: SortType): Offer[] => {
   const sortedOffers = [...offers];
