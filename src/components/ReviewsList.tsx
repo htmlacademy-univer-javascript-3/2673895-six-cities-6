@@ -1,11 +1,23 @@
 import { ReviewItem } from './ReviewItem';
-import { Review } from '../mocks/reviews';
+import { Review } from '../types/review';
 
 type ReviewsListProps = {
   reviews: Review[];
+  isLoading?: boolean;
 };
 
-export function ReviewsList({ reviews }: ReviewsListProps) {
+export function ReviewsList({ reviews, isLoading }: ReviewsListProps) {
+  if (isLoading) {
+    return (
+      <>
+        <h2 className="reviews__title">
+          Reviews · <span className="reviews__amount">0</span>
+        </h2>
+        <p>Loading reviews...</p>
+      </>
+    );
+  }
+
   return (
     <>
       <h2 className="reviews__title">

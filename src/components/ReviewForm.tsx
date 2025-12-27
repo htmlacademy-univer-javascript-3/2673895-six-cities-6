@@ -1,8 +1,22 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAuthorizationStatus } from '../store/selectors';
+import { postReview } from '../store/actions';
+import { AppDispatch } from '../store';
 
-export function ReviewForm() {
+type ReviewFormProps = {
+  offerId: string;
+};
+
+export function ReviewForm({ offerId }: ReviewFormProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const authorizationStatus = useSelector(getAuthorizationStatus);
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isAuthorized = authorizationStatus === 'AUTH';
 
   const handleRatingChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRating(Number(event.target.value));
@@ -12,13 +26,36 @@ export function ReviewForm() {
     setComment(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Здесь будет логика отправки формы
-    console.log({ rating, comment });
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      await dispatch(postReview(offerId, { rating, comment }));
+      setRating(0);
+      setComment('');
+    } catch (err) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { status?: number; data?: { error?: string } } };
+        if (axiosError.response?.status === 400) {
+          setError(axiosError.response.data?.error || 'Invalid data. Please check your review.');
+        } else {
+          setError('Failed to submit review. Please try again.');
+        }
+      } else {
+        setError('Failed to submit review. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const isSubmitDisabled = rating === 0 || comment.length < 50;
+  const isSubmitDisabled = rating === 0 || comment.length < 50 || comment.length > 300 || isSubmitting;
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <form className="reviews__form form" action="#" method="post" onSubmit={handleSubmit}>
@@ -124,7 +161,13 @@ export function ReviewForm() {
         placeholder="Tell how was your stay, what you like and what can be improved"
         value={comment}
         onChange={handleCommentChange}
+        maxLength={300}
       />
+      {error && (
+        <div style={{ color: 'red', marginBottom: '10px' }}>
+          {error}
+        </div>
+      )}
       <div className="reviews__button-wrapper">
         <p className="reviews__help">
           To submit review please make sure to set{' '}
@@ -137,10 +180,9 @@ export function ReviewForm() {
           type="submit"
           disabled={isSubmitDisabled}
         >
-          Submit
+          {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
       </div>
     </form>
   );
 }
-

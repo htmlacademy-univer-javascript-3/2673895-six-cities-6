@@ -1,29 +1,45 @@
 import { useParams, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { ReviewForm } from '../components/ReviewForm';
 import { ReviewsList } from '../components/ReviewsList';
 import { Map } from '../components/Map';
 import { OffersList } from '../components/OffersList';
-import { mockReviews } from '../mocks/reviews';
-import { getAllOffers } from '../store/selectors';
-import { AppRoutes } from '../App/AppRoutes';
+import { Spinner } from '../components/Spinner';
+import { 
+  getCurrentOffer, 
+  getNearPlaces, 
+  getReviews, 
+  getIsOfferLoading,
+  getIsReviewsLoading 
+} from '../store/selectors';
+import { fetchOffer, fetchNearPlaces, fetchReviews } from '../store/actions';
+import { AppDispatch } from '../store';
 
 export function OfferPage() {
-  const offers = useSelector(getAllOffers);
+  const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
-  const offer = offers.find((o) => o.id === id);
+  const offer = useSelector(getCurrentOffer);
+  const nearPlaces = useSelector(getNearPlaces);
+  const reviews = useSelector(getReviews);
+  const isOfferLoading = useSelector(getIsOfferLoading);
+  const isReviewsLoading = useSelector(getIsReviewsLoading);
 
-  if (!offer) {
-    return <Navigate to={AppRoutes.Main} replace />;
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOffer(id));
+      dispatch(fetchNearPlaces(id));
+      dispatch(fetchReviews(id));
+    }
+  }, [id, dispatch]);
+
+  if (isOfferLoading) {
+    return <Spinner />;
   }
 
-  // Находим предложения в том же городе, исключая текущее
-  const nearPlaces = offers.filter(
-    (o) => o.city.name === offer.city.name && o.id !== offer.id
-  ).slice(0, 3);
-
-  // Получаем отзывы для текущего предложения
-  const offerReviews = mockReviews.filter((review) => review.offerId === offer.id);
+  if (!offer) {
+    return <Navigate to="*" replace />;
+  }
 
   return (
       <main className="page__main page__main--offer">
@@ -110,8 +126,8 @@ export function OfferPage() {
               </div>
             </div>
             <section className="offer__reviews reviews">
-              <ReviewsList reviews={offerReviews} />
-              <ReviewForm />
+              <ReviewsList reviews={reviews} isLoading={isReviewsLoading} />
+              <ReviewForm offerId={id || ''} />
             </section>
           </div>
         </div>
