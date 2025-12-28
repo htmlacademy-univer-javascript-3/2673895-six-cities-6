@@ -5,6 +5,7 @@ import { Map } from '../components/Map';
 import { CitiesList } from '../components/CitiesList';
 import { SortOptions } from '../components/SortOptions';
 import { Spinner } from '../components/Spinner';
+import { EmptyMainPage } from '../components/EmptyMainPage';
 import { getCity, getOffersByCity, getIsLoading } from '../store/selectors';
 
 export function MainPage(): JSX.Element {
@@ -30,6 +31,20 @@ export function MainPage(): JSX.Element {
           <div className="cities__places-container container">
             <Spinner />
           </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (offers.length === 0) {
+    return (
+      <main className="page__main page__main--index page__main--index-empty">
+        <h1 className="visually-hidden">Cities</h1>
+        <div className="tabs">
+          <CitiesList />
+        </div>
+        <div className="cities">
+          <EmptyMainPage />
         </div>
       </main>
     );

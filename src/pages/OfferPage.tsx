@@ -6,6 +6,7 @@ import { ReviewsList } from '../components/ReviewsList';
 import { Map } from '../components/Map';
 import { OffersList } from '../components/OffersList';
 import { Spinner } from '../components/Spinner';
+import { BookmarkButton } from '../components/BookmarkButton';
 import { 
   getCurrentOffer, 
   getNearPlaces, 
@@ -66,15 +67,13 @@ export function OfferPage() {
             )}
               <div className="offer__name-wrapper">
               <h1 className="offer__name">{offer.title}</h1>
-              <button
-                className={`offer__bookmark-button button ${offer.isFavorite ? 'offer__bookmark-button--active' : ''}`}
-                type="button"
-              >
-                  <svg className="offer__bookmark-icon" width={31} height={33}>
-                    <use xlinkHref="#icon-bookmark" />
-                  </svg>
-                <span className="visually-hidden">{offer.isFavorite ? 'In bookmarks' : 'To bookmarks'}</span>
-                </button>
+              <BookmarkButton 
+                isFavourite={offer.isFavorite} 
+                offerId={offer.id}
+                className="offer__bookmark-button"
+                iconWidth={31}
+                iconHeight={33}
+              />
               </div>
               <div className="offer__rating rating">
                 <div className="offer__stars rating__stars">

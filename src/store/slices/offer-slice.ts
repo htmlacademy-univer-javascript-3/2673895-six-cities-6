@@ -26,10 +26,21 @@ const offerSlice = createSlice({
     },
     loadNearPlaces: (state, action: PayloadAction<Offer[]>) => {
       state.nearPlaces = action.payload;
+    },
+    updateCurrentOffer: (state, action: PayloadAction<Offer>) => {
+      if (state.currentOffer && state.currentOffer.id === action.payload.id) {
+        state.currentOffer = action.payload;
+      }
+    },
+    updateNearPlace: (state, action: PayloadAction<Offer>) => {
+      const index = state.nearPlaces.findIndex((offer) => offer.id === action.payload.id);
+      if (index !== -1) {
+        state.nearPlaces[index] = action.payload;
+      }
     }
   }
 });
 
-export const { loadOffer, setOfferLoading, loadNearPlaces } = offerSlice.actions;
+export const { loadOffer, setOfferLoading, loadNearPlaces, updateCurrentOffer, updateNearPlace } = offerSlice.actions;
 export default offerSlice.reducer;
 
