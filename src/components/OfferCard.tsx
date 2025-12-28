@@ -51,7 +51,7 @@ function OfferCardComponent({ offer, onMouseEnter, onMouseLeave, cardClassName =
             <b className="place-card__price-value">€{offer.price}</b>
             <span className="place-card__price-text">/&nbsp;night</span>
           </div>
-          <BookmarkButton isFavourite={offer.isFavorite} />
+          <BookmarkButton isFavourite={offer.isFavorite} offerId={offer.id} />
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">

@@ -21,10 +21,16 @@ const offersSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
+    },
+    updateOffer: (state, action: PayloadAction<Offer>) => {
+      const index = state.offers.findIndex((offer) => offer.id === action.payload.id);
+      if (index !== -1) {
+        state.offers[index] = action.payload;
+      }
     }
   }
 });
 
-export const { loadOffers, setLoading } = offersSlice.actions;
+export const { loadOffers, setLoading, updateOffer } = offersSlice.actions;
 export default offersSlice.reducer;
 

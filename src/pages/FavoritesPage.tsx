@@ -1,23 +1,34 @@
-import { useSelector } from 'react-redux';
+import { useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { FavoriteCard } from '../components/FavoriteCard';
 import { Link } from 'react-router-dom';
 import { Offer } from '../types/offer';
 import { getAllOffers } from '../store/selectors';
 import { AppRoutes } from '../App/AppRoutes';
+import { fetchFavorites } from '../store/actions';
+import { AppDispatch } from '../store';
 
 export function Favourites() {
+  const dispatch = useDispatch<AppDispatch>();
   const offers = useSelector(getAllOffers);
-  const favoriteOffers = offers.filter((offer) => offer.isFavorite);
+  
+  useEffect(() => {
+    dispatch(fetchFavorites());
+  }, [dispatch]);
+  
+  const favoriteOffers = useMemo(() => offers.filter((offer) => offer.isFavorite), [offers]);
   
   // Группируем по городам
-  const offersByCity = favoriteOffers.reduce((acc, offer) => {
-    const cityName = offer.city.name;
-    if (!acc[cityName]) {
-      acc[cityName] = [];
-    }
-    acc[cityName].push(offer);
-    return acc;
-  }, {} as Record<string, Offer[]>);
+  const offersByCity = useMemo(() => {
+    return favoriteOffers.reduce((acc, offer) => {
+      const cityName = offer.city.name;
+      if (!acc[cityName]) {
+        acc[cityName] = [];
+      }
+      acc[cityName].push(offer);
+      return acc;
+    }, {} as Record<string, Offer[]>);
+  }, [favoriteOffers]);
 
   if (favoriteOffers.length === 0) {
   return (

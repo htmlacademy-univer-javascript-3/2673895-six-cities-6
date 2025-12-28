@@ -5,16 +5,17 @@ import { AppDispatch } from './index';
 import { AxiosInstance } from 'axios';
 import { saveToken, dropToken, getToken } from '../services/api';
 import { changeCity as changeCityAction } from './slices/city-slice';
-import { loadOffers as loadOffersAction, setLoading as setLoadingAction } from './slices/offers-slice';
+import { loadOffers as loadOffersAction, setLoading as setLoadingAction, updateOffer as updateOfferAction } from './slices/offers-slice';
 import { changeSortType as changeSortTypeAction } from './slices/sort-slice';
 import { requireAuthorization as requireAuthorizationAction, setUser as setUserAction, logout as logoutAction } from './slices/user-slice';
-import { loadOffer as loadOfferAction, setOfferLoading as setOfferLoadingAction, loadNearPlaces as loadNearPlacesAction } from './slices/offer-slice';
+import { loadOffer as loadOfferAction, setOfferLoading as setOfferLoadingAction, loadNearPlaces as loadNearPlacesAction, updateCurrentOffer as updateCurrentOfferAction, updateNearPlace as updateNearPlaceAction } from './slices/offer-slice';
 import { loadReviews as loadReviewsAction, setReviewsLoading as setReviewsLoadingAction, addReview as addReviewAction } from './slices/reviews-slice';
 
 // Re-export actions for backward compatibility
 export const changeCity = changeCityAction;
 export const loadOffers = loadOffersAction;
 export const setLoading = setLoadingAction;
+export const updateOffer = updateOfferAction;
 export const changeSortType = changeSortTypeAction;
 export const requireAuthorization = requireAuthorizationAction;
 export const setUser = setUserAction;
@@ -25,6 +26,8 @@ export const logout = () => {
 export const loadOffer = loadOfferAction;
 export const setOfferLoading = setOfferLoadingAction;
 export const loadNearPlaces = loadNearPlacesAction;
+export const updateCurrentOffer = updateCurrentOfferAction;
+export const updateNearPlace = updateNearPlaceAction;
 export const loadReviews = loadReviewsAction;
 export const setReviewsLoading = setReviewsLoadingAction;
 export const addReview = addReviewAction;
@@ -102,6 +105,46 @@ export const postReview = (id: string, review: ReviewPost) => async (dispatch: A
   try {
     const { data } = await api.post<Review>(`/comments/${id}`, review);
     dispatch(addReview(data));
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const toggleFavorite = (id: string, isFavorite: boolean) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
+  try {
+    const status = isFavorite ? 0 : 1;
+    const { data } = await api.post<Offer>(`/favorite/${id}/${status}`);
+    dispatch(updateOffer(data));
+    // Обновляем текущее предложение, если оно открыто
+    const state = _getState as { offer: { currentOffer: Offer | null; nearPlaces: Offer[] } };
+    if (state.offer?.currentOffer?.id === id) {
+      dispatch(updateCurrentOffer(data));
+    }
+    // Обновляем предложение в nearPlaces, если оно там есть
+    if (state.offer?.nearPlaces?.some((offer) => offer.id === id)) {
+      dispatch(updateNearPlace(data));
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchFavorites = () => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
+  try {
+    const { data } = await api.get<Offer[]>('/favorite');
+    // Обновляем все предложения, которые есть в избранном
+    data.forEach((offer) => {
+      dispatch(updateOffer(offer));
+    });
+    // Также обновляем предложения, которые были в избранном, но теперь удалены
+    const state = _getState as { offers: { offers: Offer[] } };
+    const currentOffers = state.offers?.offers || [];
+    const favoriteIds = new Set(data.map((offer) => offer.id));
+    currentOffers.forEach((offer) => {
+      if (offer.isFavorite && !favoriteIds.has(offer.id)) {
+        dispatch(updateOffer({ ...offer, isFavorite: false }));
+      }
+    });
   } catch (error) {
     throw error;
   }
