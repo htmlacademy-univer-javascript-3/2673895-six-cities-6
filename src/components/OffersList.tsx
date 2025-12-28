@@ -1,3 +1,4 @@
+import { memo, useCallback, useMemo } from 'react';
 import { OfferCard } from './OfferCard';
 import { Offer } from '../types/offer';
 
@@ -8,26 +9,32 @@ type OffersListProps = {
   cardVariant?: 'cities' | 'near-places';
 };
 
-export function OffersList({ offers, className = 'cities__places-list places__list tabs__content', onOfferHover, cardVariant = 'cities' }: OffersListProps) {
-  const handleMouseEnter = (offerId: string) => {
+function OffersListComponent({ offers, className = 'cities__places-list places__list tabs__content', onOfferHover, cardVariant = 'cities' }: OffersListProps) {
+  const handleMouseEnter = useCallback((offerId: string) => {
     if (onOfferHover) {
       onOfferHover(offerId);
     }
-  };
+  }, [onOfferHover]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     if (onOfferHover) {
       onOfferHover(null);
     }
-  };
+  }, [onOfferHover]);
 
-  const cardClassName = cardVariant === 'near-places' 
-    ? 'near-places__card place-card' 
-    : 'cities__card place-card';
+  const cardClassName = useMemo(() => 
+    cardVariant === 'near-places' 
+      ? 'near-places__card place-card' 
+      : 'cities__card place-card',
+    [cardVariant]
+  );
   
-  const imageWrapperClassName = cardVariant === 'near-places'
-    ? 'near-places__image-wrapper place-card__image-wrapper'
-    : 'cities__image-wrapper place-card__image-wrapper';
+  const imageWrapperClassName = useMemo(() =>
+    cardVariant === 'near-places'
+      ? 'near-places__image-wrapper place-card__image-wrapper'
+      : 'cities__image-wrapper place-card__image-wrapper',
+    [cardVariant]
+  );
 
   return (
     <div className={className}>
@@ -44,4 +51,6 @@ export function OffersList({ offers, className = 'cities__places-list places__li
     </div>
   );
 }
+
+export const OffersList = memo(OffersListComponent);
 

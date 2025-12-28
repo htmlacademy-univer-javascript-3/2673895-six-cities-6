@@ -14,6 +14,6 @@ store.dispatch(fetchOffers());
 
 root.render(
   <Provider store={store}>
-    <App />
+  <App />
   </Provider>
 );

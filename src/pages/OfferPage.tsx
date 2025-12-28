@@ -1,6 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { ReviewForm } from '../components/ReviewForm';
 import { ReviewsList } from '../components/ReviewsList';
 import { Map } from '../components/Map';
@@ -25,13 +25,17 @@ export function OfferPage() {
   const isOfferLoading = useSelector(getIsOfferLoading);
   const isReviewsLoading = useSelector(getIsReviewsLoading);
 
+  const loadOfferData = useCallback((offerId: string) => {
+    dispatch(fetchOffer(offerId));
+    dispatch(fetchNearPlaces(offerId));
+    dispatch(fetchReviews(offerId));
+  }, [dispatch]);
+
   useEffect(() => {
     if (id) {
-      dispatch(fetchOffer(id));
-      dispatch(fetchNearPlaces(id));
-      dispatch(fetchReviews(id));
+      loadOfferData(id);
     }
-  }, [id, dispatch]);
+  }, [id, loadOfferData]);
 
   if (isOfferLoading) {
     return <Spinner />;

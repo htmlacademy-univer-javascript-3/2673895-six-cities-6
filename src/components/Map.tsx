@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { Offer } from '../types/offer';
@@ -28,10 +29,11 @@ const activeIcon = new Icon({
   iconAnchor: [13.5, 39]
 });
 
-export function Map({ offers, city, activeOfferId }: MapProps) {
+function MapComponent({ offers, city, activeOfferId }: MapProps) {
+  const center = useMemo(() => [city.location.latitude, city.location.longitude] as [number, number], [city.location.latitude, city.location.longitude]);
   return (
     <MapContainer
-      center={[city.location.latitude, city.location.longitude]}
+      center={center}
       zoom={city.location.zoom}
       style={{ height: '100%', width: '100%' }}
     >
@@ -53,4 +55,6 @@ export function Map({ offers, city, activeOfferId }: MapProps) {
     </MapContainer>
   );
 }
+
+export const Map = memo(MapComponent);
 
