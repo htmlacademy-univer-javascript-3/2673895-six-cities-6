@@ -1,47 +1,33 @@
-import { City, SortType } from './reducer';
 import { Offer } from '../types/offer';
-import { AuthorizationStatus, AuthInfo } from '../types/auth';
+import { AuthInfo } from '../types/auth';
 import { Review, ReviewPost } from '../types/review';
 import { AppDispatch } from './index';
 import { AxiosInstance } from 'axios';
 import { saveToken, dropToken, getToken } from '../services/api';
+import { changeCity as changeCityAction } from './slices/city-slice';
+import { loadOffers as loadOffersAction, setLoading as setLoadingAction } from './slices/offers-slice';
+import { changeSortType as changeSortTypeAction } from './slices/sort-slice';
+import { requireAuthorization as requireAuthorizationAction, setUser as setUserAction, logout as logoutAction } from './slices/user-slice';
+import { loadOffer as loadOfferAction, setOfferLoading as setOfferLoadingAction, loadNearPlaces as loadNearPlacesAction } from './slices/offer-slice';
+import { loadReviews as loadReviewsAction, setReviewsLoading as setReviewsLoadingAction, addReview as addReviewAction } from './slices/reviews-slice';
 
-export const changeCity = (city: City) => ({
-  type: 'city/changeCity' as const,
-  payload: city
-});
-
-export const loadOffers = (offers: Offer[]) => ({
-  type: 'offers/loadOffers' as const,
-  payload: offers
-});
-
-export const setLoading = (isLoading: boolean) => ({
-  type: 'offers/setLoading' as const,
-  payload: isLoading
-});
-
-export const changeSortType = (sortType: SortType) => ({
-  type: 'sort/changeSortType' as const,
-  payload: sortType
-});
-
-export const requireAuthorization = (status: AuthorizationStatus) => ({
-  type: 'user/requireAuthorization' as const,
-  payload: status
-});
-
-export const setUser = (user: AuthInfo) => ({
-  type: 'user/setUser' as const,
-  payload: user
-});
-
+// Re-export actions for backward compatibility
+export const changeCity = changeCityAction;
+export const loadOffers = loadOffersAction;
+export const setLoading = setLoadingAction;
+export const changeSortType = changeSortTypeAction;
+export const requireAuthorization = requireAuthorizationAction;
+export const setUser = setUserAction;
 export const logout = () => {
   dropToken();
-  return {
-    type: 'user/logout' as const
-  };
+  return logoutAction();
 };
+export const loadOffer = loadOfferAction;
+export const setOfferLoading = setOfferLoadingAction;
+export const loadNearPlaces = loadNearPlacesAction;
+export const loadReviews = loadReviewsAction;
+export const setReviewsLoading = setReviewsLoadingAction;
+export const addReview = addReviewAction;
 
 export const fetchOffers = () => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
   dispatch(setLoading(true));
@@ -79,36 +65,6 @@ export const login = (email: string, password: string) => async (dispatch: AppDi
     throw error;
   }
 };
-
-export const loadOffer = (offer: Offer | null) => ({
-  type: 'offer/loadOffer' as const,
-  payload: offer
-});
-
-export const setOfferLoading = (isLoading: boolean) => ({
-  type: 'offer/setLoading' as const,
-  payload: isLoading
-});
-
-export const loadNearPlaces = (offers: Offer[]) => ({
-  type: 'offer/loadNearPlaces' as const,
-  payload: offers
-});
-
-export const loadReviews = (reviews: Review[]) => ({
-  type: 'reviews/loadReviews' as const,
-  payload: reviews
-});
-
-export const setReviewsLoading = (isLoading: boolean) => ({
-  type: 'reviews/setLoading' as const,
-  payload: isLoading
-});
-
-export const addReview = (review: Review) => ({
-  type: 'reviews/addReview' as const,
-  payload: review
-});
 
 export const fetchOffer = (id: string) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
   dispatch(setOfferLoading(true));

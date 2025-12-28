@@ -1,3 +1,4 @@
+import { memo, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { BookmarkButton } from './BookmarkButton.tsx';
 import { Offer } from '../types/offer';
@@ -11,12 +12,16 @@ type OfferCardProps = {
   imageWrapperClassName?: string;
 }
 
-export function OfferCard({ offer, onMouseEnter, onMouseLeave, cardClassName = 'cities__card place-card', imageWrapperClassName = 'cities__image-wrapper place-card__image-wrapper' }: OfferCardProps): JSX.Element {
-  const handleMouseEnter = () => {
+function OfferCardComponent({ offer, onMouseEnter, onMouseLeave, cardClassName = 'cities__card place-card', imageWrapperClassName = 'cities__image-wrapper place-card__image-wrapper' }: OfferCardProps): JSX.Element {
+  const handleMouseEnter = useCallback(() => {
     if (onMouseEnter) {
       onMouseEnter(offer.id);
     }
-  };
+  }, [onMouseEnter, offer.id]);
+
+  const offerLink = useMemo(() => AppRoutes.Offer.replace(':id', offer.id), [offer.id]);
+  
+  const ratingWidth = useMemo(() => `${offer.rating * 100 / 5}%`, [offer.rating]);
 
   return (
     <article
@@ -30,7 +35,7 @@ export function OfferCard({ offer, onMouseEnter, onMouseLeave, cardClassName = '
         </div>
       )}
       <div className={imageWrapperClassName}>
-        <Link to={`${AppRoutes.Offer.replace(':id', offer.id)}`}>
+        <Link to={offerLink}>
           <img
             className="place-card__image"
             src={offer.previewImage}
@@ -50,12 +55,12 @@ export function OfferCard({ offer, onMouseEnter, onMouseLeave, cardClassName = '
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{ width: `${offer.rating * 100 / 5}%` }} />
+            <span style={{ width: ratingWidth }} />
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
         <h2 className="place-card__name">
-          <Link to={`${AppRoutes.Offer.replace(':id', offer.id)}`}>
+          <Link to={offerLink}>
             {offer.title}
           </Link>
         </h2>
@@ -63,3 +68,5 @@ export function OfferCard({ offer, onMouseEnter, onMouseLeave, cardClassName = '
       </div>
     </article>);
 }
+
+export const OfferCard = memo(OfferCardComponent);

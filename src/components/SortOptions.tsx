@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeSortType } from '../store/actions';
 import { getSortType } from '../store/selectors';
@@ -12,15 +12,21 @@ const sortOptions: SortType[] = [
   'Top rated first'
 ];
 
-export function SortOptions() {
+function SortOptionsComponent() {
   const dispatch = useDispatch();
   const currentSortType = useSelector(getSortType);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSortClick = (sortType: SortType) => {
+  const handleSortClick = useCallback((sortType: SortType) => {
     dispatch(changeSortType(sortType));
     setIsOpen(false);
-  };
+  }, [dispatch]);
+
+  const toggleOpen = useCallback(() => {
+    setIsOpen((prev) => !prev);
+  }, []);
+
+  const optionsClassName = useMemo(() => cn('places__options', 'places__options--custom', { 'places__options--opened': isOpen }), [isOpen]);
 
   return (
     <form className="places__sorting" action="#" method="get">
@@ -28,14 +34,14 @@ export function SortOptions() {
       <span
         className="places__sorting-type"
         tabIndex={0}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleOpen}
       >
         {currentSortType}
         <svg className="places__sorting-arrow" width={7} height={4}>
           <use xlinkHref="#icon-arrow-select" />
         </svg>
       </span>
-      <ul className={cn('places__options', 'places__options--custom', { 'places__options--opened': isOpen })}>
+      <ul className={optionsClassName}>
         {sortOptions.map((option) => (
           <li
             key={option}
@@ -52,4 +58,6 @@ export function SortOptions() {
     </form>
   );
 }
+
+export const SortOptions = memo(SortOptionsComponent);
 

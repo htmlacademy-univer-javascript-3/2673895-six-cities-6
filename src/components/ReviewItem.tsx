@@ -1,14 +1,15 @@
+import { memo, useMemo } from 'react';
 import { Review } from '../types/review';
 
 type ReviewItemProps = {
   review: Review;
 };
 
-export function ReviewItem({ review }: ReviewItemProps) {
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
+function ReviewItemComponent({ review }: ReviewItemProps) {
+  const formattedDate = useMemo(() => {
+    const date = new Date(review.date);
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  };
+  }, [review.date]);
 
   return (
     <li className="reviews__item">
@@ -33,10 +34,12 @@ export function ReviewItem({ review }: ReviewItemProps) {
         </div>
         <p className="reviews__text">{review.comment}</p>
         <time className="reviews__time" dateTime={review.date}>
-          {formatDate(review.date)}
+          {formattedDate}
         </time>
       </div>
     </li>
   );
 }
+
+export const ReviewItem = memo(ReviewItemComponent);
 

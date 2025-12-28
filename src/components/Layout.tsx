@@ -2,7 +2,7 @@ import cn from 'classnames';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppRoutes } from '../App/AppRoutes';
-import { getAuthorizationStatus, getUser, getAllOffers } from '../store/selectors';
+import { getAuthorizationStatus, getUser, getFavoriteCount } from '../store/selectors';
 import { logout } from '../store/actions';
 
 export default function Layout() {
@@ -10,11 +10,9 @@ export default function Layout() {
   const dispatch = useDispatch();
   const authorizationStatus = useSelector(getAuthorizationStatus);
   const user = useSelector(getUser);
-  const offers = useSelector(getAllOffers);
+  const favoriteCount = useSelector(getFavoriteCount);
   const isLoginPage = location.pathname === AppRoutes.Login;
   const isAuthorized = authorizationStatus === 'AUTH';
-  
-  const favoriteCount = offers.filter((offer) => offer.isFavorite).length;
 
   const pageClasses = cn('page', {
     'page--gray page--main': location.pathname === AppRoutes.Main,
@@ -48,15 +46,15 @@ export default function Layout() {
               </Link>
             </div>
             {!isLoginPage && (
-              <nav className="header__nav">
-                <ul className="header__nav-list">
+            <nav className="header__nav">
+              <ul className="header__nav-list">
                   {isAuthorized && user ? (
                     <>
-                      <li className="header__nav-item user">
+                <li className="header__nav-item user">
                         <Link
-                          className="header__nav-link header__nav-link--profile"
+                    className="header__nav-link header__nav-link--profile"
                           to={AppRoutes.Favorites}
-                        >
+                  >
                           <div className="header__avatar-wrapper user__avatar-wrapper">
                             <img
                               src={user.avatarUrl}
@@ -64,19 +62,19 @@ export default function Layout() {
                               style={{ borderRadius: '50%' }}
                             />
                           </div>
-                          <span className="header__user-name user__name">
+                    <span className="header__user-name user__name">
                             {user.email}
-                          </span>
+                    </span>
                           {favoriteCount > 0 && (
                             <span className="header__favorite-count">{favoriteCount}</span>
                           )}
                         </Link>
-                      </li>
-                      <li className="header__nav-item">
+                </li>
+                <li className="header__nav-item">
                         <a className="header__nav-link" href="#" onClick={handleSignOut}>
-                          <span className="header__signout">Sign out</span>
-                        </a>
-                      </li>
+                    <span className="header__signout">Sign out</span>
+                  </a>
+                </li>
                     </>
                   ) : (
                     <li className="header__nav-item">
@@ -85,8 +83,8 @@ export default function Layout() {
                       </Link>
                     </li>
                   )}
-                </ul>
-              </nav>
+              </ul>
+            </nav>
             )}
           </div>
         </div>

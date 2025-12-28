@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ReviewItem } from './ReviewItem';
 import { Review } from '../types/review';
 
@@ -6,7 +7,7 @@ type ReviewsListProps = {
   isLoading?: boolean;
 };
 
-export function ReviewsList({ reviews, isLoading }: ReviewsListProps) {
+function ReviewsListComponent({ reviews, isLoading }: ReviewsListProps) {
   if (isLoading) {
     return (
       <>
@@ -31,4 +32,6 @@ export function ReviewsList({ reviews, isLoading }: ReviewsListProps) {
     </>
   );
 }
+
+export const ReviewsList = memo(ReviewsListComponent);
 
