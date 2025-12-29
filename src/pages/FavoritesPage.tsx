@@ -13,12 +13,12 @@ export function Favourites() {
   const offers = useSelector(getAllOffers);
   
   useEffect(() => {
-    dispatch(fetchFavorites());
+    void dispatch(fetchFavorites());
   }, [dispatch]);
   
   const favoriteOffers = useMemo(() => offers.filter((offer) => offer.isFavorite), [offers]);
   
-  // Группируем по городам
+  // Group by cities
   const offersByCity = useMemo(() => {
     return favoriteOffers.reduce((acc, offer) => {
       const cityName = offer.city.name;

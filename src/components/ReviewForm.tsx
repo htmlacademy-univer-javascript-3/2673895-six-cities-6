@@ -57,8 +57,14 @@ export function ReviewForm({ offerId }: ReviewFormProps) {
     return null;
   }
 
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    handleSubmit(event).catch(() => {
+      // Error is already handled in handleSubmit
+    });
+  };
+
   return (
-    <form className="reviews__form form" action="#" method="post" onSubmit={handleSubmit}>
+    <form className="reviews__form form" action="#" method="post" onSubmit={handleFormSubmit}>
       <label className="reviews__label form__label" htmlFor="review">
         Your review
       </label>

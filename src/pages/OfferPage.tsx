@@ -27,9 +27,9 @@ export function OfferPage() {
   const isReviewsLoading = useSelector(getIsReviewsLoading);
 
   const loadOfferData = useCallback((offerId: string) => {
-    dispatch(fetchOffer(offerId));
-    dispatch(fetchNearPlaces(offerId));
-    dispatch(fetchReviews(offerId));
+    void dispatch(fetchOffer(offerId));
+    void dispatch(fetchNearPlaces(offerId));
+    void dispatch(fetchReviews(offerId));
   }, [dispatch]);
 
   useEffect(() => {

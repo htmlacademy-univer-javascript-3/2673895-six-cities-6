@@ -36,7 +36,7 @@ export function BookmarkButton({
       return;
     }
 
-    dispatch(toggleFavorite(offerId, isFavourite));
+    void dispatch(toggleFavorite(offerId, isFavourite));
   }, [dispatch, offerId, isFavourite, isAuthorized, navigate]);
 
   const buttonDesc = isFavourite ? 'In bookmarks' : 'To bookmarks';

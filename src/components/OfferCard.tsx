@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { BookmarkButton } from './BookmarkButton.tsx';
+import { BookmarkButton } from './BookmarkButton';
 import { Offer } from '../types/offer';
 import { AppRoutes } from '../App/AppRoutes';
 
