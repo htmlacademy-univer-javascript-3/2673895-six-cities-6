@@ -22,7 +22,7 @@ export default function Layout() {
   });
 
   const handleLogout = () => {
-    void dispatch(logout() as any);
+    void dispatch(logout());
     navigate(AppRoutes.Main);
   };
 

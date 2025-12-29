@@ -30,7 +30,7 @@ export function LoginPage() {
     }
 
     try {
-      await dispatch(loginAndFetchFavorites(email, password) as any);
+      await dispatch(loginAndFetchFavorites(email, password));
       navigate(AppRoutes.Main);
     } catch (err) {
       if (err && typeof err === 'object' && 'response' in err) {

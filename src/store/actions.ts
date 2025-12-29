@@ -71,8 +71,8 @@ export const login = (email: string, password: string) => async (dispatch: AppDi
   dispatch(setUser(data));
 };
 
-export const loginAndFetchFavorites = (email: string, password: string) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
-  await dispatch(login(email, password) as any);
+export const loginAndFetchFavorites = (email: string, password: string) => async (dispatch: AppDispatch, _getState: unknown) => {
+  await dispatch(login(email, password));
   const state = _getState as { user: { authorizationStatus: string } };
   if (state.user?.authorizationStatus === 'AUTH') {
     await dispatch(fetchFavorites());
