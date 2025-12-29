@@ -1,16 +1,24 @@
-import { useState, FormEvent } from 'react';
-import { useDispatch } from 'react-redux';
+import { useState, FormEvent, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../store/actions';
+import { loginAndFetchFavorites } from '../store/actions';
 import { AppDispatch } from '../store';
 import { AppRoutes } from '../App/AppRoutes';
+import { getAuthorizationStatus } from '../store/selectors';
 
 export function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const authStatus = useSelector(getAuthorizationStatus);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authStatus === 'AUTH') {
+      navigate(AppRoutes.Main);
+    }
+  }, [authStatus, navigate]);
 
   const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -22,7 +30,7 @@ export function LoginPage() {
     }
 
     try {
-      await dispatch(login(email, password));
+      await dispatch(loginAndFetchFavorites(email, password) as any);
       navigate(AppRoutes.Main);
     } catch (err) {
       if (err && typeof err === 'object' && 'response' in err) {

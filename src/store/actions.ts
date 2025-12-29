@@ -19,9 +19,15 @@ export const updateOffer = updateOfferAction;
 export const changeSortType = changeSortTypeAction;
 export const requireAuthorization = requireAuthorizationAction;
 export const setUser = setUserAction;
-export const logout = () => {
-  dropToken();
-  return logoutAction();
+export const logout = () => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
+  try {
+    await api.delete('/logout');
+  } catch {
+    // Ignore errors on logout
+  } finally {
+    dropToken();
+    dispatch(logoutAction());
+  }
 };
 export const loadOffer = loadOfferAction;
 export const setOfferLoading = setOfferLoadingAction;
@@ -63,6 +69,14 @@ export const login = (email: string, password: string) => async (dispatch: AppDi
   const { data } = await api.post<AuthInfo>('/login', { email, password });
   saveToken(data.token);
   dispatch(setUser(data));
+};
+
+export const loginAndFetchFavorites = (email: string, password: string) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
+  await dispatch(login(email, password) as any);
+  const state = _getState as { user: { authorizationStatus: string } };
+  if (state.user?.authorizationStatus === 'AUTH') {
+    await dispatch(fetchFavorites());
+  }
 };
 
 export const fetchOffer = (id: string) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
@@ -118,19 +132,28 @@ export const toggleFavorite = (id: string, isFavorite: boolean) => async (dispat
 };
 
 export const fetchFavorites = () => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
-  const { data } = await api.get<Offer[]>('/favorite');
-  // Update all offers that are in favorites
-  data.forEach((offer) => {
-    dispatch(updateOffer(offer));
-  });
-  // Also update offers that were in favorites but are now removed
-  const state = _getState as { offers: { offers: Offer[] } };
-  const currentOffers = state.offers?.offers || [];
-  const favoriteIds = new Set(data.map((offer) => offer.id));
-  currentOffers.forEach((offer) => {
-    if (offer.isFavorite && !favoriteIds.has(offer.id)) {
-      dispatch(updateOffer({ ...offer, isFavorite: false }));
-    }
-  });
+  const state = _getState as { user: { authorizationStatus: string } };
+  if (state.user?.authorizationStatus !== 'AUTH') {
+    return;
+  }
+  
+  try {
+    const { data } = await api.get<Offer[]>('/favorite');
+    // Update all offers that are in favorites
+    data.forEach((offer) => {
+      dispatch(updateOffer(offer));
+    });
+    // Also update offers that were in favorites but are now removed
+    const offersState = _getState as { offers: { offers: Offer[] } };
+    const currentOffers = offersState.offers?.offers || [];
+    const favoriteIds = new Set(data.map((offer) => offer.id));
+    currentOffers.forEach((offer) => {
+      if (offer.isFavorite && !favoriteIds.has(offer.id)) {
+        dispatch(updateOffer({ ...offer, isFavorite: false }));
+      }
+    });
+  } catch {
+    // Ignore errors for favorites
+  }
 };
 

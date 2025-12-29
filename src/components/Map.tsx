@@ -1,5 +1,5 @@
-import { memo, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { memo, useMemo, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { Offer } from '../types/offer';
 
@@ -29,6 +29,15 @@ const activeIcon = new Icon({
   iconAnchor: [13.5, 39]
 });
 
+// Component to update map view when city changes
+function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [map, center, zoom]);
+  return null;
+}
+
 function MapComponent({ offers, city, activeOfferId }: MapProps) {
   const center = useMemo(() => [city.location.latitude, city.location.longitude] as [number, number], [city.location.latitude, city.location.longitude]);
   return (
@@ -37,6 +46,7 @@ function MapComponent({ offers, city, activeOfferId }: MapProps) {
       zoom={city.location.zoom}
       style={{ height: '100%', width: '100%' }}
     >
+      <ChangeView center={center} zoom={city.location.zoom} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
