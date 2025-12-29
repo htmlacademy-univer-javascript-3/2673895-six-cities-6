@@ -44,18 +44,21 @@ export const createAPI = (): AxiosInstance => {
 
   api.interceptors.response.use(
     (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        dropToken();
-        if (storeRef) {
-          // Use dynamic import to avoid circular dependency
-          import('../store/actions').then(({ requireAuthorization }) => {
-            storeRef?.dispatch(requireAuthorization('NO_AUTH'));
-          });
+    (error: unknown) => {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError.response?.status === 401) {
+          dropToken();
+          if (storeRef) {
+            // Use dynamic import to avoid circular dependency
+            void import('../store/actions').then(({ requireAuthorization }) => {
+              storeRef?.dispatch(requireAuthorization('NO_AUTH'));
+            });
+          }
         }
       }
 
-      return Promise.reject(error);
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
   );
 

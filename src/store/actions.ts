@@ -60,13 +60,9 @@ export const checkAuth = () => async (dispatch: AppDispatch, _getState: unknown,
 };
 
 export const login = (email: string, password: string) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
-  try {
-    const { data } = await api.post<AuthInfo>('/login', { email, password });
-    saveToken(data.token);
-    dispatch(setUser(data));
-  } catch (error) {
-    throw error;
-  }
+  const { data } = await api.post<AuthInfo>('/login', { email, password });
+  saveToken(data.token);
+  dispatch(setUser(data));
 };
 
 export const fetchOffer = (id: string) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
@@ -85,7 +81,7 @@ export const fetchNearPlaces = (id: string) => async (dispatch: AppDispatch, _ge
   try {
     const { data } = await api.get<Offer[]>(`/offers/${id}/nearby`);
     dispatch(loadNearPlaces(data));
-  } catch (error) {
+  } catch {
     // Ignore errors for near places
   }
 };
@@ -102,51 +98,39 @@ export const fetchReviews = (id: string) => async (dispatch: AppDispatch, _getSt
 };
 
 export const postReview = (id: string, review: ReviewPost) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
-  try {
-    const { data } = await api.post<Review>(`/comments/${id}`, review);
-    dispatch(addReview(data));
-  } catch (error) {
-    throw error;
-  }
+  const { data } = await api.post<Review>(`/comments/${id}`, review);
+  dispatch(addReview(data));
 };
 
 export const toggleFavorite = (id: string, isFavorite: boolean) => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
-  try {
-    const status = isFavorite ? 0 : 1;
-    const { data } = await api.post<Offer>(`/favorite/${id}/${status}`);
-    dispatch(updateOffer(data));
-    // Обновляем текущее предложение, если оно открыто
-    const state = _getState as { offer: { currentOffer: Offer | null; nearPlaces: Offer[] } };
-    if (state.offer?.currentOffer?.id === id) {
-      dispatch(updateCurrentOffer(data));
-    }
-    // Обновляем предложение в nearPlaces, если оно там есть
-    if (state.offer?.nearPlaces?.some((offer) => offer.id === id)) {
-      dispatch(updateNearPlace(data));
-    }
-  } catch (error) {
-    throw error;
+  const status = isFavorite ? 0 : 1;
+  const { data } = await api.post<Offer>(`/favorite/${id}/${status}`);
+  dispatch(updateOffer(data));
+  // Update current offer if it's open
+  const state = _getState as { offer: { currentOffer: Offer | null; nearPlaces: Offer[] } };
+  if (state.offer?.currentOffer?.id === id) {
+    dispatch(updateCurrentOffer(data));
+  }
+  // Update offer in nearPlaces if it's there
+  if (state.offer?.nearPlaces?.some((offer) => offer.id === id)) {
+    dispatch(updateNearPlace(data));
   }
 };
 
 export const fetchFavorites = () => async (dispatch: AppDispatch, _getState: unknown, api: AxiosInstance) => {
-  try {
-    const { data } = await api.get<Offer[]>('/favorite');
-    // Обновляем все предложения, которые есть в избранном
-    data.forEach((offer) => {
-      dispatch(updateOffer(offer));
-    });
-    // Также обновляем предложения, которые были в избранном, но теперь удалены
-    const state = _getState as { offers: { offers: Offer[] } };
-    const currentOffers = state.offers?.offers || [];
-    const favoriteIds = new Set(data.map((offer) => offer.id));
-    currentOffers.forEach((offer) => {
-      if (offer.isFavorite && !favoriteIds.has(offer.id)) {
-        dispatch(updateOffer({ ...offer, isFavorite: false }));
-      }
-    });
-  } catch (error) {
-    throw error;
-  }
+  const { data } = await api.get<Offer[]>('/favorite');
+  // Update all offers that are in favorites
+  data.forEach((offer) => {
+    dispatch(updateOffer(offer));
+  });
+  // Also update offers that were in favorites but are now removed
+  const state = _getState as { offers: { offers: Offer[] } };
+  const currentOffers = state.offers?.offers || [];
+  const favoriteIds = new Set(data.map((offer) => offer.id));
+  currentOffers.forEach((offer) => {
+    if (offer.isFavorite && !favoriteIds.has(offer.id)) {
+      dispatch(updateOffer({ ...offer, isFavorite: false }));
+    }
+  });
 };
 

@@ -35,7 +35,7 @@ const sortOffers = (offers: Offer[], sortType: SortType): Offer[] => {
       return sortedOffers.sort((a, b) => b.rating - a.rating);
     case 'Popular':
     default:
-      return sortedOffers; // Исходный порядок
+      return sortedOffers; // Original order
   }
 };
 

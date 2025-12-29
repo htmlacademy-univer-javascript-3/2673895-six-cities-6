@@ -16,7 +16,7 @@ type MapProps = {
   activeOfferId?: string | null;
 };
 
-// Создаем кастомные иконки для маркеров
+// Create custom icons for markers
 const defaultIcon = new Icon({
   iconUrl: 'img/pin.svg',
   iconSize: [27, 39],
@@ -57,4 +57,3 @@ function MapComponent({ offers, city, activeOfferId }: MapProps) {
 }
 
 export const Map = memo(MapComponent);
-
